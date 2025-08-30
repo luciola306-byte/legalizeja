@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Legalizei — Entrar</title>
+  <meta name="color-scheme" content="light dark" />
+  <meta name="description" content="Faça login no Legalizei para acessar CRLV e DUT com praticidade." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a63ff'/%3E%3Cpath d='M20 33l8 8 16-18' fill='none' stroke='%23fff' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  
+  <style>
+    /* Mantive todo o seu CSS original */
+    :root{--brand-600:#0a63ff;--brand-700:#084fd2;--brand-800:#063da5;--brand-50:#eef4ff;--ink-900:#0b1220;--ink-700:#2c3342;--ink-500:#5d6473;--border:#e6e9f2;--ok:#0bbd6c;--error:#e5484d;--focus:2px solid #0a63ff;--radius:14px;--shadow-lg:0 20px 50px rgba(10, 99, 255, 0.20);--shadow-sm:0 8px 20px rgba(10, 99, 255, 0.10);color-scheme:light;}
+    *,*::before,*::after{ box-sizing: border-box; }
+    html,body{ height: 100%; }
+    body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji", "Segoe UI Symbol"; color: var(--ink-900); background: radial-gradient(1200px 600px at 80% -20%, rgba(10,99,255,.18), transparent 60%), radial-gradient(800px 600px at -10% 100%, rgba(10,99,255,.12), transparent 60%), linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);}
+    .page{ min-height:100%; display:grid; place-items:center; padding:32px 16px;}
+    .card{ width:100%; max-width:420px; background:#fff; border:1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-lg); padding: 28px;}
+    .brand{ display:flex; align-items:center; gap:12px; margin-bottom: 18px; user-select:none;}
+    .brand-logo{ width:40px; height:40px; flex:0 0 40px; display:grid; place-items:center; border-radius:12px; background: linear-gradient(135deg, var(--brand-600), var(--brand-800)); box-shadow: var(--shadow-sm);}
+    .brand-logo svg{ width:24px; height:24px; }
+    .brand-name{ font-size:1.375rem; font-weight:800; letter-spacing:.2px; color: var(--brand-800);}
+    .brand-sub{ margin-top:2px; color: var(--ink-500); font-size:.95rem;}
+    form{ margin-top: 18px; }
+    .field{ margin-top:14px; }
+    .label{ display:flex; justify-content:space-between; align-items:center; font-size:.92rem; color:var(--ink-700); margin-bottom:8px;}
+    .input{ appearance:none; width:100%; border:1px solid var(--border); border-radius:12px; padding: 14px 14px; font-size: 1rem; background:#fff; outline:none; transition: box-shadow .2s ease, border-color .2s ease, background .2s ease;}
+    .input::placeholder{ color:#9aa3b2; }
+    .input:focus{ border-color: var(--brand-600); box-shadow: 0 0 0 4px rgba(10,99,255,.12);}
+    .input.error{ border-color: var(--error); box-shadow: 0 0 0 4px rgba(229,72,77,.12);}
+    .password-wrap{ position:relative; }
+    .toggle-pass{ position:absolute; top:50%; right:8px; transform: translateY(-50%); border:none; background:transparent; padding:8px; border-radius:10px; cursor:pointer;}
+    .toggle-pass:focus-visible{ outline: var(--focus); }
+    .row{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:10px;}
+    .checkbox{ display:flex; align-items:center; gap:10px; font-size:.92rem; color:var(--ink-700);}
+    .checkbox input{ width:18px; height:18px; }
+    .btn{ width:100%; border:none; border-radius:12px; padding:14px 16px; font-size:1rem; font-weight:700; background: linear-gradient(135deg, var(--brand-600), var(--brand-700)); color:#fff; cursor:pointer; box-shadow: var(--shadow-sm); transition: transform .04s ease, filter .2s ease, box-shadow .2s ease;}
+    .btn:hover{ filter: brightness(1.03); }
+    .btn:active{ transform: translateY(1px);}
+    .btn[disabled]{ opacity:.6; cursor:not-allowed;}
+    .btn-outline{ width:100%; border:1px solid var(--border); background:#fff; color:var(--ink-900); font-weight:700; box-shadow:none; margin-top:12px;}
+    .helper{ margin-top:12px; font-size:.9rem; color:var(--ink-700); display:flex; justify-content:space-between; gap:12px;}
+    .helper a{ color: var(--brand-700); text-decoration:none; font-weight:600;}
+    .helper a:hover{ text-decoration:underline;}
+    .divider{ display:flex; align-items:center; gap:12px; margin: 18px 0 12px; color:#8a94a6; font-size:.9rem;}
+    .divider::before,.divider::after{ content:""; height:1px; background:var(--border); flex:1; }
+    .foot{ text-align:center; margin-top:16px; color:#8a94a6; font-size:.85rem;}
+    .foot a{ color:inherit; text-decoration:underline;}
+    @media (max-width: 420px){ .card{ padding:22px; } .brand-name{ font-size:1.25rem; } }
+    a, button, input{ -webkit-tap-highlight-color: transparent; }
+    a:focus-visible, button:focus-visible, input:focus-visible{ outline: var(--focus); border-radius:10px; }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="card" aria-labelledby="title">
+      <div class="brand" aria-hidden="true">
+        <div class="brand-logo" role="img" aria-label="Logotipo Legalizei">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="0" y="0" width="24" height="24" rx="6" fill="white" opacity=".12"></rect>
+            <path d="M5.5 12.5l4 4 9-10" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-name">Legalizei</div>
+          <div class="brand-sub">Acesse seus documentos veiculares</div>
+        </div>
+      </div>
+
+      <h1 id="title" class="sr-only" style="position:absolute;left:-9999px;opacity:0;">Entrar no Legalizei</h1>
+
+      <form id="login-form" novalidate>
+        <div class="field">
+          <label class="label" for="identity">E-mail ou CPF</label>
+          <input class="input" id="identity" name="identity" type="text" inputmode="email" placeholder="ex.: usuario@email.com ou 123.456.789-09" autocomplete="username" aria-describedby="identity-help" required/>
+          <small id="identity-help" style="display:block;margin-top:6px;color:#8a94a6;">Você pode entrar com e-mail ou CPF.</small>
+        </div>
+
+        <div class="field">
+          <div class="label">
+            <label for="password">Senha</label>
+            <a href="#" id="forgot">Esqueceu a senha?</a>
+          </div>
+          <div class="password-wrap">
+            <input class="input" id="password" name="password" type="password" placeholder="Sua senha" autocomplete="current-password" required minlength="6"/>
+            <button type="button" class="toggle-pass" aria-label="Mostrar senha" title="Mostrar/ocultar senha">
+              <svg id="eye" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#2c3342" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="row">
+          <label class="checkbox">
+            <input type="checkbox" id="remember" name="remember" />
+            <span>Lembrar de mim</span>
+          </label>
+        </div>
+
+        <div class="field" style="margin-top:16px;">
+          <button class="btn" id="submit-btn" type="submit">Entrar</button>
+        </div>
+
+        <div class="divider">ou</div>
+
+        <button class="btn btn-outline" type="button" id="create-account">Criar conta</button>
+
+        <p class="foot">Ao continuar, você concorda com nossos
+          <a href="#">Termos</a> e <a href="#">Privacidade</a>.
+        </p>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    const $ = (sel, ctx=document) => ctx.querySelector(sel);
+    const $$ = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
+
+    const form = $("#login-form");
+    const identity = $("#identity");
+    const password = $("#password");
+    const submitBtn = $("#submit-btn");
+    const togglePassBtn = $(".toggle-pass");
+
+    // CPF mask
+    identity.addEventListener("input", e => {
+      const value = e.target.value;
+      if (/[a-zA-Z@]/.test(value)) return;
+      const digits = value.replace(/\D/g, "").slice(0,11);
+      let out = digits;
+      if(digits.length>3 && digits.length<=6) out = digits.replace(/(\d{3})(\d+)/,"$1.$2");
+      else if(digits.length>6 && digits.length<=9) out = digits.replace(/(\d{3})(\d{3})(\d+)/,"$1.$2.$3");
+      else if(digits.length>9) out = digits.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})","$1.$2.$3-$4");
+      e.target.value = out;
+    });
+
+    // Toggle password
+    togglePassBtn.addEventListener("click", () => {
+      const isPwd = password.type==="password";
+      password.type = isPwd ? "text" : "password";
+      togglePassBtn.setAttribute("aria-label", isPwd?"Ocultar senha":"Mostrar senha");
+      $("#eye circle").style.display = isPwd ? "none":"block";
+    });
+
+    function isValidCPF(cpf){
+      const only = cpf.replace(/\D/g,"");
+      if(only.length!==11 || /^(\d)\1+$/.test(only)) return false;
+      const calc = base=>{let sum=0;for(let i=0;i<base;i++)sum+=parseInt(only.charAt(i))*(base+1-i); let mod=(sum*10)%11; return mod===10?0:mod; };
+      return calc(9)===parseInt(only.charAt(9)) && calc(10)===parseInt(only.charAt(10));
+    }
+    function isEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+    form.addEventListener("submit", e=>{
+      e.preventDefault();
+      $$(".input").forEach(i=>i.classList.remove("error"));
+      const idVal = identity.value.trim();
+      const pwdVal = password.value.trim();
+      let idOk = /[a-zA-Z@]/.test(idVal)?isEmail(idVal):isValidCPF(idVal);
+      if(!idOk){ identity.classList.add("error"); identity.focus(); return; }
+      if(pwdVal.length<6){ password.classList.add("error"); password.focus(); return; }
+
+      submitBtn.disabled=true;
+      submitBtn.textContent="Entrando…";
+
+      const payload = { identity:idVal, password:pwdVal, remember:$("#remember").checked };
+
+      fetch("/api/login", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify(payload)
+      })
+      .then(res=>res.json())
+      .then(data=>{
+        if(data.token){ localStorage.setItem("token", data.token); window.location.href="/app/dashboard"; }
+        else { alert(data.message||"Usuário ou senha inválidos"); submitBtn.disabled=false; submitBtn.textContent="Entrar"; }
+      })
+      .catch(err=>{ console.error(err); submitBtn.disabled=false; submitBtn.textContent="Entrar"; });
+    });
+
+    $("#forgot").addEventListener("click", e=>{ e.preventDefault(); window.location.href="/recuperar-senha"; });
+    $("#create-account").addEventListener("click", ()=>{ window.location.href="/criar-conta"; });
+  </script>
+</body>
+</html>

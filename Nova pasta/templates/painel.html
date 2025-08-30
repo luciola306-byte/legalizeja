@@ -1,0 +1,318 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Legalizei — Acesso e Consulta</title>
+  <meta name="color-scheme" content="light" />
+  <style>
+    :root{
+      --brand-600:#0a63ff;
+      --brand-700:#084fd2;
+      --brand-800:#063da5;
+      --brand-50:#eef4ff;
+      --ink-900:#0b1220;
+      --ink-700:#2c3342;
+      --ink-500:#5d6473;
+      --border:#e6e9f2;
+      --radius:14px;
+      --shadow-lg: 0 20px 50px rgba(10, 99, 255, 0.20);
+      --shadow-sm: 0 8px 20px rgba(10, 99, 255, 0.10);
+    }
+    *{ box-sizing:border-box }
+    html,body{ height:100% }
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto;
+      color: var(--ink-900);
+      background:
+        radial-gradient(1200px 600px at 80% -20%, rgba(10,99,255,.18), transparent 60%),
+        radial-gradient(800px 600px at -10% 100%, rgba(10,99,255,.12), transparent 60%),
+        linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      display:grid; place-items:center; padding: 32px 16px;
+    }
+    .shell{ width:100%; max-width: 980px; display:grid; gap:24px; grid-template-columns: 1fr 1fr; }
+    .panel{
+      background:#fff; border:1px solid var(--border); border-radius: var(--radius);
+      box-shadow: var(--shadow-lg); padding: 28px;
+    }
+    .panel h2{ margin:0 0 8px; color: var(--brand-800); font-size:1.35rem }
+    .muted{ margin:0; color: var(--ink-500); font-size:.95rem }
+
+    /* Login */
+    .field{ margin-top:14px }
+    label{ display:block; font-size:.92rem; color:var(--ink-700); margin-bottom:8px; font-weight:600 }
+    .input{
+      width:100%; border:1px solid var(--border); border-radius:12px; padding: 12px 14px; font-size:1rem;
+      outline:none; transition: box-shadow .2s, border-color .2s;
+    }
+    .input:focus{ border-color: var(--brand-600); box-shadow: 0 0 0 4px rgba(10,99,255,.12) }
+    .row{ display:flex; gap:12px; align-items:center; justify-content:space-between; margin-top:12px }
+    .btn{
+      border:none; border-radius:12px; padding: 12px 16px; font-weight:800; font-size:1rem; cursor:pointer;
+      background: linear-gradient(135deg, var(--brand-600), var(--brand-700)); color:#fff; box-shadow: var(--shadow-sm);
+      transition: transform .05s, filter .2s;
+    }
+    .btn:hover{ filter: brightness(1.03) }
+    .btn:active{ transform: translateY(1px) }
+    .btn-outline{
+      background:#fff; color:var(--ink-900); border:1px solid var(--border); box-shadow:none;
+    }
+
+    /* Consulta */
+    .hidden{ display:none !important }
+    .badge{
+      display:inline-block; padding:4px 10px; border-radius:999px; font-size:.78rem; font-weight:700;
+      background: var(--brand-50); color: var(--brand-700); border:1px solid var(--border);
+    }
+    .table{
+      width:100%; border-collapse: collapse; margin-top:12px; font-size:.95rem
+    }
+    .table th, .table td{ border-bottom:1px solid var(--border); padding: 10px 8px; text-align:left }
+    .table th{ color: var(--ink-700); font-weight:700 }
+    .helper{ font-size:.9rem; color: var(--ink-700); margin-top:10px }
+
+    /* Loader: bolinhas/ondas */
+    .loader{
+      display:none; margin-top:16px; text-align:center;
+      padding: 16px; border:1px dashed var(--border); border-radius:12px; background:#fff;
+    }
+    .dots{ display:inline-flex; gap:8px; align-items:center; justify-content:center; }
+    .dot{
+      width:12px; height:12px; border-radius:50%; background: var(--brand-600); display:inline-block;
+      animation: bounce 1.2s infinite ease-in-out;
+    }
+    .dot:nth-child(2){ animation-delay: .2s }
+    .dot:nth-child(3){ animation-delay: .4s }
+    @keyframes bounce{ 0%,80%,100%{ transform:scale(0) } 40%{ transform:scale(1) } }
+    .loader p{ margin:10px 0 0; color: var(--ink-700) }
+
+    /* Layout responsivo */
+    @media (max-width: 900px){ .shell{ grid-template-columns: 1fr } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <!-- Painel de Login -->
+    <section id="login-panel" class="panel">
+      <h2>Entrar no Legalizei</h2>
+      <p class="muted">Acesse para consultar CRLV/DUT e gerenciar documentos veiculares.</p>
+
+      <form id="login-form" novalidate>
+        <div class="field">
+          <label for="email">E-mail</label>
+          <input id="email" type="email" class="input" placeholder="voce@email.com" autocomplete="username" required />
+        </div>
+        <div class="field">
+          <label for="senha">Senha</label>
+          <input id="senha" type="password" class="input" placeholder="••••••••" autocomplete="current-password" minlength="6" required />
+        </div>
+        <div class="row">
+          <button class="btn" type="submit">Entrar</button>
+          <button class="btn btn-outline" type="button" id="criar">Criar conta</button>
+        </div>
+        <p class="helper">Ao continuar, você concorda com nossos <a href="#" style="color:var(--brand-700);text-decoration:none;font-weight:700">Termos</a> e <a href="#" style="color:var(--brand-700);text-decoration:none;font-weight:700">Privacidade</a>.</p>
+      </form>
+    </section>
+
+    <!-- Painel de Consulta por Placa (aparece só após login) -->
+    <section id="consulta-panel" class="panel hidden" aria-live="polite">
+      <h2>Consulta por Placa <span class="badge">Legalizei</span></h2>
+      <p class="muted">Informe a placa do veículo para carregar o documento.</p>
+
+      <form id="consulta-form" novalidate>
+        <div class="field">
+          <label for="placa">Placa do veículo</label>
+          <input id="placa" class="input" type="text" placeholder="Ex.: ABC1D23 (Mercosul) ou ABC1234" maxlength="7" required />
+        </div>
+        <div class="row">
+          <button class="btn" type="submit">Consultar</button>
+          <button class="btn btn-outline" type="button" id="sair">Sair</button>
+        </div>
+      </form>
+
+      <!-- Loader com bolinhas/ondas (5s) -->
+      <div id="loader" class="loader" role="status" aria-live="assertive">
+        <div class="dots">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+        <p>Carregando documento…</p>
+      </div>
+
+      <!-- Resultado -->
+      <div id="resultado" class="hidden" style="margin-top:16px">
+        <table class="table" aria-label="Resultado da consulta">
+          <thead>
+            <tr>
+              <th>Placa</th>
+              <th>Proprietário</th>
+              <th>Veículo</th>
+              <th>Status</th>
+              <th>Atualização</th>
+            </tr>
+          </thead>
+          <tbody id="resultado-body"></tbody>
+        </table>
+        <div class="row" style="margin-top:14px">
+          <button class="btn" type="button" id="baixar">Baixar comprovante (PDF)</button>
+          <button class="btn btn-outline" type="button" id="nova">Nova consulta</button>
+        </div>
+
+        <p class="helper">Dica: mantenha seus dados atualizados para agilizar renovações de licenciamento.</p>
+      </div>
+
+      <!-- Últimas consultas (decorativo/útil) -->
+      <div id="historico" style="margin-top:18px">
+        <h3 style="margin:0 0 8px; font-size:1.05rem; color:var(--ink-700)">Últimas consultas</h3>
+        <table class="table" aria-label="Histórico de consultas">
+          <thead><tr><th>Placa</th><th>Veículo</th><th>Quando</th></tr></thead>
+          <tbody id="hist-body">
+            <tr><td>ABC1D23</td><td>Honda Civic 2020</td><td>há 2 dias</td></tr>
+            <tr><td>BRA2E19</td><td>VW Gol 2018</td><td>há 1 semana</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // ---------------------------
+    // Banco de dados simulado (troque por API real)
+    // ---------------------------
+    const DB = {
+      "ABC1234": { dono: "João Silva", veiculo: "Honda Civic 2020", status: "Em dia", atualizado: "2025-08-10" },
+      "ABC1D23": { dono: "Maria Oliveira", veiculo: "Toyota Corolla 2022", status: "Pendente", atualizado: "2025-08-05" },
+      "BRA2E19": { dono: "Pedro Santos", veiculo: "VW Gol 2018", status: "Em dia", atualizado: "2025-07-29" }
+    };
+
+    // Exemplo para API real (substitua a busca local):
+    async function buscarPlacaAPI(placa){
+      // Descomente e ajuste para seu backend:
+      // const res = await fetch(`/api/placas?placa=${encodeURIComponent(placa)}`, { credentials: 'include' });
+      // if(!res.ok) throw new Error('Erro ao consultar API');
+      // return await res.json(); // deve retornar {encontrado: true/false, dados: {...}}
+      // Simulação local:
+      const dados = DB[placa] || null;
+      return { encontrado: !!dados, dados };
+    }
+
+    // ---------------------------
+    // Validações e helpers
+    // ---------------------------
+    const $ = (s, c=document)=>c.querySelector(s);
+    const $$ = (s, c=document)=>Array.from(c.querySelectorAll(s));
+
+    function normalizaPlaca(v){
+      return v.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,7);
+    }
+    // Padrões: ABC1234 (antigo) ou ABC1D23 (Mercosul)
+    function placaValida(v){
+      const p = normalizaPlaca(v);
+      const antigo = /^[A-Z]{3}\d{4}$/;
+      const mercosul = /^[A-Z]{3}\d[A-Z]\d{2}$/;
+      return antigo.test(p) || mercosul.test(p);
+    }
+
+    // Máscara leve (sem forçar formato, só upper/limpa)
+    const placaInput = $("#placa");
+    placaInput?.addEventListener("input", (e)=>{
+      e.target.value = normalizaPlaca(e.target.value);
+    });
+
+    // ---------------------------
+    // Fluxo: Login → Consulta
+    // ---------------------------
+    const loginPanel = $("#login-panel");
+    const consultaPanel = $("#consulta-panel");
+
+    $("#login-form").addEventListener("submit", (e)=>{
+      e.preventDefault();
+      const email = $("#email").value.trim();
+      const senha = $("#senha").value.trim();
+      if(!email || !/\S+@\S+\.\S+/.test(email)){ alert("Informe um e-mail válido."); return; }
+      if(!senha || senha.length < 6){ alert("A senha deve ter no mínimo 6 caracteres."); return; }
+
+      // Aqui você integraria com POST /api/login
+      // Se ok:
+      loginPanel.classList.add("hidden");
+      consultaPanel.classList.remove("hidden");
+      $("#placa").focus();
+    });
+
+    $("#sair").addEventListener("click", ()=>{
+      consultaPanel.classList.add("hidden");
+      $("#resultado").classList.add("hidden");
+      $("#loader").style.display = "none";
+      $("#consulta-form").reset();
+      loginPanel.classList.remove("hidden");
+      $("#email").focus();
+    });
+
+    // ---------------------------
+    // Consulta por placa com loader 5s
+    // ---------------------------
+    const consultaForm = $("#consulta-form");
+    const loader = $("#loader");
+    const resultado = $("#resultado");
+    const corpo = $("#resultado-body");
+
+    consultaForm.addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      const placa = normalizaPlaca($("#placa").value);
+      if(!placaValida(placa)){ alert("Placa inválida. Use ABC1234 ou ABC1D23."); return; }
+
+      resultado.classList.add("hidden");
+      loader.style.display = "block";
+
+      // 1) inicia consulta remota e 2) força animação por 5s
+      const requisicao = buscarPlacaAPI(placa);
+      await new Promise(r => setTimeout(r, 5000)); // ondas 5s
+
+      const resp = await requisicao;
+      loader.style.display = "none";
+
+      corpo.innerHTML = "";
+      if(!resp.encontrado){
+        corpo.innerHTML = `<tr><td colspan="5">Nenhum registro encontrado para a placa <b>${placa}</b>.</td></tr>`;
+      } else {
+        const d = resp.dados;
+        // Dono parcialmente mascarado por privacidade
+        const donoMask = d.dono.replace(/^(\S+)\s(\S).+$/, "$1 $2.");
+        const statusBadge = d.status === "Em dia"
+          ? `<span class="badge" style="background:#eafbf3;color:#0a7a4f;border-color:#cceedd">${d.status}</span>`
+          : `<span class="badge" style="background:#fff3f3;color:#b43238;border-color:#ffd8db">${d.status}</span>`;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${placa}</td>
+          <td>${donoMask}</td>
+          <td>${d.veiculo}</td>
+          <td>${statusBadge}</td>
+          <td>${new Date(d.atualizado).toLocaleDateString("pt-BR")}</td>
+        `;
+        corpo.appendChild(tr);
+
+        // adiciona ao histórico visual
+        const htr = document.createElement("tr");
+        htr.innerHTML = `<td>${placa}</td><td>${d.veiculo}</td><td>agora</td>`;
+        $("#hist-body").prepend(htr);
+      }
+      resultado.classList.remove("hidden");
+    });
+
+    $("#nova").addEventListener("click", ()=>{
+      $("#consulta-form").reset();
+      $("#resultado").classList.add("hidden");
+      $("#placa").focus();
+    });
+
+    // Botão "baixar" — aqui você conectaria com geração/servidor de PDF
+    $("#baixar").addEventListener("click", ()=>{
+      alert("Aqui você chamaria o endpoint para gerar/baixar o PDF do documento.");
+      // Ex.: window.location.href = `/api/documento/pdf?placa=${encodeURIComponent(normalizaPlaca($("#placa").value))}`;
+    });
+
+    // Ações secundárias
+    $("#criar").addEventListener("click", ()=> alert("Fluxo de cadastro não implementado neste mockup."));
+  </script>
+</body>
+</html>
